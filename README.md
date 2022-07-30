@@ -1,3 +1,3 @@
 Rocketseat Ignite
 
-Projeto Ig news utilizando Next.js e Typescript
+Projeto Ignews utilizando Next.js e Typescript
