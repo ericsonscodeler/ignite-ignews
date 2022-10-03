@@ -1,7 +1,9 @@
 import NextAuth from "next-auth"
 import GithubProvider from "next-auth/providers/github"
-export const authOptions = {
-  providers: [
+import {query as q} from 'faunadb'
+import {fauna} from '../../../services/faunadb'
+export default NextAuth({
+   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
@@ -9,8 +11,26 @@ export const authOptions = {
         params: {
             scope: 'read:user',
         },
-    },
+      },
     }),
+    
   ],
-}
-export default NextAuth(authOptions)
+  callbacks: {
+    async signIn({user, account , profile}) {
+      const { email } = user
+
+      try {
+        await fauna.query(
+          q.Create(
+            q.Collection('users'),
+            { data : { email }}
+          )
+        )
+        return true; 
+      }catch {
+        return false
+      }
+    }
+  }
+})
+ 
